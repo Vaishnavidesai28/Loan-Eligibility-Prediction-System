@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Train Model - Loan Eligibility Predictor{% endblock %}
+
+{% block content %}
+
+<div class="train-wrapper">
+    <div class="train-heading text-center">
+        <h2 class="fw-bold">Trained model</h2>
+    </div>
+
+
+    {% if best_result %}
+    <div class="card model-summary-card shadow-sm border-0 mx-auto">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <h4 class="fw-bold mb-0">{{ best_result.name }}</h4>
+                <span class="badge best-badge">Best Model</span>
+            </div>
+
+            <div class="metric-list">
+                <div class="metric-row">
+                    <span>Accuracy:</span>
+                    <span class="fw-semibold">{{ best_result.accuracy }}</span>
+                </div>
+                <div class="metric-row">
+                    <span>Precision:</span>
+                    <span class="fw-semibold">{{ best_result.precision }}</span>
+                </div>
+                <div class="metric-row">
+                    <span>Recall:</span>
+                    <span class="fw-semibold">{{ best_result.recall }}</span>
+                </div>
+                <div class="metric-row">
+                    <span>F1 Score:</span>
+                    <span class="fw-semibold">{{ best_result.f1 }}</span>
+                </div>
+            </div>
+
+            <div class="model-explanation mt-4">
+                <p class="mb-0">
+                    This model was selected as the best performing model based on its
+                    <strong>F1 Score of {{ best_result.f1 }}</strong>. The F1 Score is a balanced metric
+                    that considers both precision and recall, making it ideal for loan eligibility prediction.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+        <div class="card shadow-sm border-0 mx-auto train-card">
+            <div class="card-body text-center">
+                <div class="alert alert-warning mb-0">
+                    <strong>No model has been trained yet.</strong><br>
+                    Click the button above to start training.
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

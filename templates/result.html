@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Prediction Result - Loan Eligibility Predictor{% endblock %}
+
+{% block content %}
+
+<div class="text-center mb-4">
+    <h2 class="fw-bold">Prediction Result</h2>
+</div>
+
+<!-- MAIN RESULT CARD -->
+<div class="card shadow-sm mx-auto mb-4" style="max-width: 750px;">
+    <div class="card-body text-center">
+
+        {% if result.prediction == "Approved" %}
+            <h3 class="text-success fw-bold">✔ Loan Approved</h3>
+        {% else %}
+            <h3 class="text-danger fw-bold">✘ Loan Rejected</h3>
+        {% endif %}
+
+        <hr>
+
+        <!-- Probability Bars -->
+        <div class="mt-3 mb-4">
+
+            <p class="fw-bold mb-1">Probability of Approval</p>
+            <div class="progress mb-3" style="height: 25px;">
+                <div class="progress-bar bg-success" role="progressbar"
+                     style="width: {{ result.probability_approved }}%;">
+                    {{ result.probability_approved }}%
+                </div>
+            </div>
+
+            <p class="fw-bold mb-1">Probability of Rejection</p>
+            <div class="progress" style="height: 25px;">
+                <div class="progress-bar bg-danger" role="progressbar"
+                     style="width: {{ result.probability_rejected }}%;">
+                    {{ result.probability_rejected }}%
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- EXPLANATION SECTION -->
+{% if result.explanations %}
+<div class="card shadow-sm mx-auto mb-4" style="max-width: 750px;">
+    <div class="card-body">
+        <h4 class="fw-bold">Why was this decision made?</h4>
+        <ul class="mt-2">
+            {% for explanation in result.explanations %}
+            <li>{{ explanation }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+<!-- APPROVAL CRITERIA (IF REJECTED) -->
+{% if result.approval_criteria %}
+<div class="card shadow-sm mx-auto mb-4" style="max-width: 750px;">
+    <div class="card-body">
+        {% if result.prediction == "Rejected" %}
+            <h4 class="fw-bold text-danger">How to Increase Chances of Approval</h4>
+        {% else %}
+            <h4 class="fw-bold text-success">Your Profile Meets Approval Criteria</h4>
+        {% endif %}
+
+        <ul class="mt-2">
+            {% for criterion in result.approval_criteria %}
+            <li>{{ criterion }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+<!-- INPUT SUMMARY -->
+<div class="card shadow-sm mx-auto mb-4" style="max-width: 750px;">
+    <div class="card-body">
+        <h4 class="fw-bold">Input Summary</h4>
+
+        <div class="row mt-3">
+
+            <div class="col-md-6 mb-2"><b>Gender:</b> {{ input_data.Gender }}</div>
+            <div class="col-md-6 mb-2"><b>Married:</b> {{ input_data.Married }}</div>
+
+            <div class="col-md-6 mb-2"><b>Dependents:</b> {{ input_data.Dependents }}</div>
+            <div class="col-md-6 mb-2"><b>Education:</b> {{ input_data.Education }}</div>
+
+            <div class="col-md-6 mb-2"><b>Self Employed:</b> {{ input_data.Self_Employed }}</div>
+            <div class="col-md-6 mb-2"><b>Applicant Income:</b> ₹{{ input_data.ApplicantIncome }}</div>
+
+            <div class="col-md-6 mb-2"><b>Coapplicant Income:</b> ₹{{ input_data.CoapplicantIncome }}</div>
+
+            <div class="col-md-6 mb-2"><b>Loan Amount (₹):</b>
+                {% if input_data.LoanAmount %}
+                    ₹{{ (input_data.LoanAmount * 1) }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </div>
+
+            <div class="col-md-6 mb-2"><b>Loan Term:</b>
+                {% if input_data.Loan_Amount_Term %}
+                    {{ input_data.Loan_Amount_Term }} days
+                {% else %}
+                    N/A
+                {% endif %}
+            </div>
+
+            <div class="col-md-6 mb-2"><b>Credit History:</b>
+                {% if input_data.Credit_History == '1' or input_data.Credit_History == 1 %}
+                    Good
+                {% elif input_data.Credit_History == '0' or input_data.Credit_History == 0 %}
+                    Bad
+                {% else %}
+                    N/A
+                {% endif %}
+            </div>
+
+            <div class="col-md-6 mb-2"><b>Property Area:</b> {{ input_data.Property_Area }}</div>
+
+        </div>
+    </div>
+</div>
+
+<!-- BUTTON -->
+<div class="text-center">
+    <a href="{{ url_for('index') }}" class="btn btn-primary px-4">Make Another Prediction</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Batch Prediction Results - Loan Eligibility Predictor{% endblock %}
+
+{% block content %}
+
+<div class="batch-wrapper">
+    <div class="alert alert-success text-center mb-4 batch-success">
+        Predictions completed for {{ results|length }} applicants!
+    </div>
+
+    <div class="text-center mb-3">
+        <h3 class="fw-bold text-primary mb-1">Batch Prediction Results</h3>
+        <p class="text-muted mb-0">Results for {{ results|length }} applicants</p>
+    </div>
+
+    <div class="d-flex justify-content-center gap-3 mb-3 flex-wrap">
+        <a href="{{ url_for('download_predictions') }}" class="btn batch-btn-primary">
+            Download Results CSV
+        </a>
+        <a href="{{ url_for('predict_batch') }}" class="btn batch-btn-secondary">
+            Upload Another File
+        </a>
+    </div>
+
+    <div class="card shadow-sm batch-card border-0">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0 batch-table">
+                <thead>
+                    <tr>
+                        <th>Loan ID</th>
+                        <th>Gender</th>
+                        <th>Married</th>
+                        <th>Dependents</th>
+                        <th>Education</th>
+                        <th>Applicant Income</th>
+                        <th>Loan Amount</th>
+                        <th>Credit History</th>
+                        <th>Property Area</th>
+                        <th>Prediction</th>
+                        <th>Prob. Approved</th>
+                        <th>Prob. Rejected</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                    {% set row_class = 'approved-row' if result.get('Prediction') == 'Approved' else 'rejected-row' %}
+                    <tr class="{{ row_class }}">
+                        <td>{{ result.get('Loan_ID', 'N/A') }}</td>
+                        <td>{{ result.get('Gender', 'N/A') }}</td>
+                        <td>{{ result.get('Married', 'N/A') }}</td>
+                        <td>{{ result.get('Dependents', 'N/A') }}</td>
+                        <td>{{ result.get('Education', 'N/A') }}</td>
+                        <td>₹{{ result.get('ApplicantIncome', 0) }}</td>
+                        <td>
+                            {% if result.get('LoanAmount') %}
+                                ₹{{ (result.get('LoanAmount') * 1000) | int }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if result.get('Credit_History') == 1 %}
+                                Good
+                            {% elif result.get('Credit_History') == 0 %}
+                                Bad
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>{{ result.get('Property_Area', 'N/A') }}</td>
+                        <td class="fw-semibold">
+                            {% if result.get('Prediction') == 'Approved' %}
+                                <span class="text-success">Approved</span>
+                            {% else %}
+                                <span class="text-danger">Rejected</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ result.get('Prob_Approved', 0) }}%</td>
+                        <td>{{ result.get('Prob_Rejected', 0) }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

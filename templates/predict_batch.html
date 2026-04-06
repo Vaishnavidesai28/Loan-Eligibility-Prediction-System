@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Batch Prediction – Loan Eligibility Predictor{% endblock %}
+
+{% block content %}
+
+<div class="batch-upload-wrapper">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold" style="color: #667eea;">Batch Prediction</h2>
+        <p class="text-muted">Upload a CSV file to predict loan eligibility for multiple applicants</p>
+    </div>
+
+    {% if not model_loaded %}
+    <div class="alert alert-warning">
+        <strong>Warning:</strong> No trained model found.
+        Please <a href="{{ url_for('train') }}">train a model</a> first.
+    </div>
+    {% endif %}
+
+    <div class="card shadow-sm upload-card border-0 mx-auto">
+        <div class="card-body">
+
+            <!-- CSV Info Box -->
+            <div class="alert batch-info">
+                <h5 class="fw-bold mb-2">CSV File Requirements</h5>
+                <p class="mb-1">Your CSV must contain the following column names:</p>
+                <p class="mb-2">
+                    <code>Gender, Married, Dependents, Education, Self_Employed, ApplicantIncome, CoapplicantIncome, LoanAmount, Loan_Amount_Term, Credit_History, Property_Area</code>
+                </p>
+
+                <ul class="mb-2">
+                    <li><strong>Loan_ID</strong> is optional (included in output if present)</li>
+                    <li>Missing values in <code>LoanAmount</code>, <code>Loan_Amount_Term</code>, <code>Credit_History</code> will be handled automatically</li>
+                    <li>Output file will be saved to: <code>data/predictions.csv</code></li>
+                </ul>
+            </div>
+
+            <!-- Upload Form -->
+            <form method="POST" action="{{ url_for('predict_batch') }}" enctype="multipart/form-data">
+
+                <div class="mb-3">
+                    <label for="file" class="form-label fw-bold">Upload CSV File *</label>
+                    <input class="form-control" type="file" name="file" id="file" accept=".csv"
+                           required {% if not model_loaded %}disabled{% endif %}>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn upload-btn"
+                            {% if not model_loaded %}disabled{% endif %}>
+                        Process Batch Prediction
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
